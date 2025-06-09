@@ -7,8 +7,9 @@ function generarCertificadosPorFilas(filasCSV, sheet_Id, template_Id, folder_Id)
     // Convierte "4,7,25" → [4, 7, 25]
     var filas = filasCSV.split(",").map(f => parseInt(f.trim()));
 
+    
     filas.forEach(fila => {
-      var i = fila - 1; // Ajustar índice (fila 2 es índice 1)
+      var i = fila; // Ajustar índice (fila 2 es índice 1)
 
       if (i <= 0 || i >= data.length) {
         Logger.log("Fila " + fila + " fuera de rango. Se omite.");

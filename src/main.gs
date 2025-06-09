@@ -22,7 +22,7 @@ function mostrarModalCertificadosPorFilas() {
   const html = HtmlService.createHtmlOutputFromFile('modal_cert_filas')
     .setWidth(450)
     .setHeight(380);
-  SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados Por Filas');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
 }
 
 function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSize) {

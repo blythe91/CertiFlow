@@ -22,7 +22,7 @@
   </style>
 </head>
 <body>
-  <h2>Generar Certificados Específicos</h2>
+  <h2>Generar Certificados Por Filas</h2>
   <form id="specificForm" onsubmit="return false;">
     <label for="sheetUrl">URL de la Hoja de Cálculo:</label><br>
     <input type="text" id="sheetUrl" name="sheetUrl" required><br><br>
@@ -33,7 +33,7 @@
     <label for="folderUrl">URL de la Carpeta Destino:</label><br>
     <input type="text" id="folderUrl" name="folderUrl" required><br><br>
 
-    <label for="specificRows">Filas a generar (ej. 2,4,7):</label><br>
+    <label for="specificRows">ID de los certificados a generar (COL-A: ej. 2,4,7):</label><br>
     <input type="text" id="specificRows" name="specificRows" required
            placeholder="2,4,7" pattern="^\d+(,\d+)*$"
            title="Ingresa números separados por comas, sin espacios. Ejemplo: 2,5,9"><br><br>
