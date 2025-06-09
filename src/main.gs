@@ -7,22 +7,53 @@ function onOpen() {
         .addItem('Todos', 'mostrarModalCertificados')
         .addItem('Por Filas', 'mostrarModalCertificadosPorFilas')
     )
+    .addSubMenu(
+      ui.createMenu('Enviar Certificados')
+        .addItem('Todos', 'mostrarModalEnviarTodos')
+        .addItem('Por Filas', 'mostrarModalEnviarPorFilas')
+        .addItem('Por Rango de Filas', 'mostrarModalEnviarPorRango')
+    )
     .addToUi();
 }
 
+mostrarModalEnviarTodos
+
+function mostrarModalEnviarTodos() {
+  const html = HtmlService.createHtmlOutputFromFile('modal_send_all')
+    .setWidth(450)
+    .setHeight(380);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Enviar Certificados');
+}
 
 function mostrarModalCertificados() {
-  const html = HtmlService.createHtmlOutputFromFile('modal_certificados')
+  const html = HtmlService.createHtmlOutputFromFile('modal_cert_all')
     .setWidth(450)
     .setHeight(380);
   SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
 }
 
 function mostrarModalCertificadosPorFilas() {
-  const html = HtmlService.createHtmlOutputFromFile('modal_cert_filas')
+  const html = HtmlService.createHtmlOutputFromFile('modal_cert_rows')
     .setWidth(450)
     .setHeight(380);
   SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
+}
+
+function procesarYEnviarCertificados(sheetUrl, folderUrl, batchSize, mensajeEmail) {
+  const sheetId = obtenerIdHojaCalculo(sheetUrl);
+  const folderId = obtenerIdCarpeta(folderUrl);
+
+  Logger.log("URL de hoja de cálculo: " + sheetUrl);
+  Logger.log("ID de hoja de cálculo: " + sheetId);
+  Logger.log("////////////////");
+  Logger.log("URL de carpeta destino: " + folderUrl);
+  Logger.log("ID de carpeta destino: " + folderId);
+
+  if (!sheetId || !folderId) {
+    throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
+  }
+
+  enviarCertificadosEmail(sheetId, folderId, batchSize, mensajeEmail);
 }
 
 function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSize) {
@@ -47,16 +78,6 @@ function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSiz
 }
 
 
-function detenerGeneracionCertificados() {
-  eliminarTrigger();
-
-  PropertiesService.getScriptProperties().deleteAllProperties();
-  PropertiesService.getScriptProperties().deleteProperty("lastProcessedIndex");
-  PropertiesService.getScriptProperties().deleteProperty("totalCertificados");
-
-}
-
-
 function procesarYGenerarCertificadosPorFilas(filasCSV, sheetUrl, templateUrl, folderUrl) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);
   const templateId = obtenerIdPlantillaSlide(templateUrl);
@@ -76,4 +97,11 @@ function procesarYGenerarCertificadosPorFilas(filasCSV, sheetUrl, templateUrl, f
   }
 
   generarCertificadosPorFilas(filasCSV, sheetId, templateId, folderId);
+}
+
+function detenerGeneracionCertificados() {
+  eliminarTrigger();
+  PropertiesService.getScriptProperties().deleteAllProperties();
+  PropertiesService.getScriptProperties().deleteProperty("lastProcessedIndex");
+  PropertiesService.getScriptProperties().deleteProperty("totalCertificados");
 }

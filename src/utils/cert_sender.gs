@@ -1,21 +1,14 @@
-/**
- * Envía certificados por correo electrónico en lotes desde una hoja de cálculo de Google Sheets.
- * 
- * @param {string} sheet_Id - ID de la hoja de cálculo de Google Sheets que contiene los datos.
- * @param {string} folder_Id - ID de la carpeta de Google Drive donde están almacenados los certificados.
- * @param {number} batchSize - Cantidad de certificados a enviar por cada ejecución (para evitar el límite de tiempo de ejecución).
- */
-function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize) {
+function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize, textEmail) {
   try {
     var sheet = SpreadsheetApp.openById(sheet_Id).getSheetByName("data");
     var data = sheet.getDataRange().getValues();
     var folder = DriveApp.getFolderById(folder_Id);
-    
-    var properties = PropertiesService.getScriptProperties();
-    var startIndex = parseInt(properties.getProperty("lastProcessedIndex")) || 1;
-    var endIndex = Math.min(startIndex + batchSize, data.length); 
 
-    Logger.log("Procesando desde la fila " + startIndex + " hasta la fila " + (endIndex - 1));
+    PropertiesService.getScriptProperties().setProperty("totalEnviados", data.length - 1); // Excluye encabezado
+
+    var props = PropertiesService.getScriptProperties();
+    var startIndex = parseInt(props.getProperty("lastProcessedIndexEnvio")) || 1;
+    var endIndex = Math.min(startIndex + batchSize, data.length);
 
     for (var i = startIndex; i < endIndex; i++) {
       var primerNombre = data[i][1];
@@ -27,22 +20,39 @@ function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize) {
       var textoFecha = data[i][17];
       var codigoCertificado = data[i][12];
 
-      var nombreCompleto = primerNombre + " " + (segundoNombre || "") + " " + primerApellido + " " + (segundoApellido || "");
-      nombreCompleto = nombreCompleto.trim();
-
+      var nombreCompleto = (primerNombre + " " + (segundoNombre || "") + " " + primerApellido + " " + (segundoApellido || "")).trim();
       var nombreCertificado = "Certificado_" + codigoCertificado + "_" + primerNombre + "_" + primerApellido + ".pdf";
+
       var archivos = folder.getFilesByName(nombreCertificado);
-      
       if (archivos.hasNext()) {
         var archivo = archivos.next();
-        
-        var asunto = "Certificado de participación - " + tituloEvento;
+
+        var asunto = "Certificado de participación - " + codigoCertificado +" - "+tituloEvento;
+
+        var cuerpo = 
+              "Estimado(a) " + nombreCompleto + ", reciba un cordial saludo en nombre de la Universidad Nacional Experimental del Táchira UNET\n\n" +
+              "Nos permitimos informarle que en el archivo adjunto podrá obtener el certificado digital correspondiente a su participación en el evento \n\"" + tituloEvento + "\", " + textoFecha + ".\n\n" +
+
+              // si textEmail es válido se concatena, si esta vacío o es nulo se omite
+
+              (textEmail && textEmail.trim() !== "" 
+                ? textEmail 
+                : "Es de destacar que el presente certificado ha sido firmado por las autoridades de nuestra institución universitaria; lo que lo valida como un documento oficial y avala que usted ha recibido formación profesional a través de esta casa de estudios; de haber cancelado el aporte para el certificado físico, a la brevedad se le indicará para que proceda a retirarlo.\n\n" +
+                  "Le invitamos a seguir participando en futuros eventos.\n\n" +
+                  "Atentamente,\n\nEquipo de Soporte Tecnológico\nDecanato de Investigación\nUNET\n\n" +
+                  "Nota: Ante cualquier duda o aclaratoria relacionada con su certificado, escribir al correo electrónico: soporteinv@unet.edu.ve; sugiriendo en tal caso que sea como respuesta a este correo electrónico.\n"
+              );
+
+        /* Anterior texto estandar utilizado
+
         var cuerpo = "Estimado(a) " + nombreCompleto + ", reciba un cordial saludo en nombre de la Universidad Nacional Experimental del Táchira UNET\n\n" +
                      "Nos permitimos informarle que en el archivo adjunto podrá obtener el certificado digital correspondiente a su participación en el evento \n\"" + tituloEvento + "\", " + textoFecha + ".\n\n" +
                      "Es de destacar que el presente certificado ha sido firmado por las autoridades de nuestra institución universitaria; lo que lo valida como un documento oficial y avala que usted ha recibido formación profesional a través de esta casa de estudios; de haber cancelado el aporte para el certificado físico, a la brevedad se le indicará para que proceda a retirarlo.\n\n" +
                      "Le invitamos a seguir participando en futuros eventos.\n\n" +
                      "Atentamente,\n\nEquipo de Soporte Tecnológico\nDecanato de Investigación\nUNET\n\n" +
-                     "Nota: Ante cualquier duda o aclaratoria relacionada con su certificado, escribir al correo electrónico: soporteinv@unet.edu.ve; sugiriendo en tal caso que sea como respuesta a este correo electrónico.\n";
+                     "Nota: Ante cualquier duda o aclaratoria relacionada con su certificado, escribir al correo electrónico: soporteinv@unet.edu.ve; sugiriendo en tal caso que sea como respuesta a este correo electrónico.\n"; */
+
+        
 
         MailApp.sendEmail({
           to: correo,
@@ -58,11 +68,14 @@ function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize) {
     }
 
     if (endIndex < data.length) {
-      properties.setProperty("lastProcessedIndex", endIndex);
+      props.setProperty("lastProcessedIndexEnvio", endIndex);
       Logger.log("Proceso pausado. Continuará desde la fila: " + endIndex);
+      triggerEnviarCertificados(); // crea un nuevo trigger
     } else {
-      properties.deleteProperty("lastProcessedIndex");
-      Logger.log("Proceso finalizado. Todos los certificados fueron enviados.");
+      props.deleteProperty("lastProcessedIndexEnvio");
+      props.deleteProperty("totalEnviados");
+      eliminarTriggerEnvio();
+      Logger.log("Todos los certificados fueron enviados.");
     }
 
   } catch (e) {
@@ -70,36 +83,62 @@ function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize) {
   }
 }
 
-/**
- * Ejecuta el proceso de envío de certificados desde el menú de la hoja de cálculo.
- * Solicita al usuario los datos necesarios para la ejecución del proceso.
- */
-function ejecutarEnvioDesdeMenu() {
-  var ui = SpreadsheetApp.getUi();
+function triggerEnviarCertificados() {
+  eliminarTriggerEnvio();
 
-  var sheetResponse = ui.prompt("Ingrese el ID de la hoja de cálculo:");
-  if (sheetResponse.getSelectedButton() !== ui.Button.OK) return;
-  var sheet_Id = sheetResponse.getResponseText().trim();
+  var triggers = ScriptApp.getProjectTriggers();
+  var existe = triggers.some(t => t.getHandlerFunction() === "continuarEnvioCertificados");
+  if (existe) return;
 
-  var folderResponse = ui.prompt("Ingrese el ID de la carpeta de certificados:");
-  if (folderResponse.getSelectedButton() !== ui.Button.OK) return;
-  var folder_Id = folderResponse.getResponseText().trim();
+  ScriptApp.newTrigger("continuarEnvioCertificados")
+    .timeBased()
+    .after(50000)
+    .create();
+}
 
-  var batchResponse = ui.prompt("Ingrese la cantidad de envíos por lote (ejemplo: 50):");
-  if (batchResponse.getSelectedButton() !== ui.Button.OK) return;
-  var batchSize = parseInt(batchResponse.getResponseText().trim()) || 50;
+function continuarEnvioCertificados() {
+  var props = PropertiesService.getScriptProperties();
+  var sheet_Id = props.getProperty("sheet_Id_envio");
+  var folder_Id = props.getProperty("folder_Id_envio");
+  var batchSize = parseInt(props.getProperty("batch_size_envio"));
+
+  if (sheet_Id && folder_Id && batchSize) {
+    enviarCertificadosEmail(sheet_Id, folder_Id, batchSize);
+  }
+}
+
+function eliminarTriggerEnvio() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === "continuarEnvioCertificados") {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+}
+
+// Punto de entrada desde el frontend (por ejemplo, Apps Script Web App)
+function procesarYEnviarCertificados(sheet_Id, folder_Id, batchSize) {
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty("sheet_Id_envio", sheet_Id);
+  props.setProperty("folder_Id_envio", folder_Id);
+  props.setProperty("batch_size_envio", batchSize);
+  props.deleteProperty("lastProcessedIndexEnvio");
 
   enviarCertificadosEmail(sheet_Id, folder_Id, batchSize);
 }
 
-/**
- * Agrega un menú personalizado en la hoja de cálculo al abrir el archivo,
- * específicamente con la opción de enviar certificados.
+// Progreso para el frontend
+function obtenerProgresoEnvio() {
+  var props = PropertiesService.getScriptProperties();
+  var last = parseInt(props.getProperty("lastProcessedIndexEnvio")) || 0;
+  var total = parseInt(props.getProperty("totalEnviados")) || 0;
 
-function onOpen() {
-  var ui = SpreadsheetApp.getUi();
-  ui.createMenu("Certificados")
-    .addItem("Enviar Certificados", "ejecutarEnvioDesdeMenu")
-    .addToUi();
+  var porcentaje = total ? Math.floor((last / total) * 100) : 0;
+
+  return {
+    porcentaje: porcentaje,
+    mensaje: "Enviando certificados...",
+    generados: last,
+    total: total
+  };
 }
- */
