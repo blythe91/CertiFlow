@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    #progressBarContainer {
+      width: 100%;
+      background-color: #ccc;
+      border-radius: 5px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    #progressBar {
+      width: 0%;
+      height: 20px;
+      background-color: #4caf50;
+      text-align: center;
+      color: white;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Generar Todos los Certificados</h2>
+  <form id="paramForm" onsubmit="return false;">
+    <label for="sheetUrl">URL de la Hoja de Cálculo:</label><br>
+    <input type="text" id="sheetUrl" name="sheetUrl" required><br><br>
+    
+    <label for="templateUrl">URL de la Plantilla:</label><br>
+    <input type="text" id="templateUrl" name="templateUrl" required><br><br>
+    
+    <label for="folderUrl">URL de la Carpeta Destino:</label><br>
+    <input type="text" id="folderUrl" name="folderUrl" required><br><br>
+
+    <input type="button" id="generateBtn" value="Generar Certificados" onclick="iniciarGeneracion()">
+    <input type="button" id="stopBtn" value="Detener" onclick="detenerProceso()">
+  </form>
+
+  <p id="statusMessage"></p>
+  <p id="certCount"></p>
+
+  <div id="progressBarContainer">
+    <div id="progressBar">0%</div>
+  </div>
+
+  <script>
+    function iniciarGeneracion() {
+      const sheetUrl = document.getElementById('sheetUrl').value.trim();
+      const templateUrl = document.getElementById('templateUrl').value.trim();
+      const folderUrl = document.getElementById('folderUrl').value.trim();
+
+      if (!sheetUrl || !templateUrl || !folderUrl) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      bloquearFormulario(true);
+      document.getElementById('progressBarContainer').style.display = "block";
+      actualizarProgreso({ porcentaje: 0, mensaje: "Preparando datos...", generados: 0, total: 0 });
+
+      // Obtener valor por defecto desde el backend
+      google.script.run
+        .withSuccessHandler(function(defaultBatchSize) {
+          google.script.run
+            .withSuccessHandler(actualizarProgreso)
+            .withFailureHandler((error) => {
+              alert("Error al generar certificados: " + error.message);
+              bloquearFormulario(false);
+            })
+            .procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, defaultBatchSize);
+        })
+        .obtenerBatchSizePorDefecto();
+    }
+
+
+    function detenerProceso() {
+      google.script.run
+        .withSuccessHandler(() => {
+          alert("Proceso detenido.");
+          bloquearFormulario(false);
+        })
+        .detenerGeneracionCertificados();
+    }
+
+    function actualizarProgreso(datos) {
+      var progressBar = document.getElementById('progressBar');
+      var statusMessage = document.getElementById('statusMessage');
+      var certCount = document.getElementById('certCount');
+
+      progressBar.style.width = datos.porcentaje + "%";
+      progressBar.textContent = datos.porcentaje + "%";
+      statusMessage.textContent = datos.mensaje;
+      certCount.textContent = `Certificados generados: ${datos.generados} / ${datos.total}`;
+
+      if (datos.porcentaje >= 100) {
+        bloquearFormulario(false);
+        progressBar.textContent = "Completado";
+      }
+    }
+
+    function bloquearFormulario(bloquear) {
+      document.getElementById('sheetUrl').disabled = bloquear;
+      document.getElementById('templateUrl').disabled = bloquear;
+      document.getElementById('folderUrl').disabled = bloquear;
+      document.getElementById('generateBtn').disabled = bloquear;
+      document.getElementById('stopBtn').disabled = !bloquear;
+    }
+  </script>
+</body>
+</html>
