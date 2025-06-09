@@ -12,6 +12,9 @@ function generarCertificados(sheet_Id, template_Id, folder_Id, batch_size) {
     // Abre la hoja de cálculo y obtiene todos los datos de la hoja "data"
     var sheet = SpreadsheetApp.openById(sheet_Id).getSheetByName("data");
     var data = sheet.getDataRange().getValues();
+
+    PropertiesService.getScriptProperties().setProperty("totalCertificados", data.length - 1); // excluye encabezado
+
     
     // Obtiene la carpeta de Drive donde se guardarán los certificados PDF
     var folder = DriveApp.getFolderById(folder_Id);
@@ -101,11 +104,15 @@ function generarCertificados(sheet_Id, template_Id, folder_Id, batch_size) {
       // Si ya terminó, elimina triggers pendientes y limpia propiedad de progreso
       eliminarTrigger();
       PropertiesService.getScriptProperties().deleteProperty("lastProcessedIndex");
+      PropertiesService.getScriptProperties().deleteProperty("totalCertificados");
     }
   } catch (e) {
     // Loguea cualquier error para facilitar depuración
     Logger.log("Error en generarCertificados: " + e.toString());
   }
+
+
+
 }
 
 /**
@@ -159,4 +166,19 @@ function eliminarTrigger() {
       ScriptApp.deleteTrigger(triggers[i]);
     }
   }
+}
+
+function obtenerProgresoCertificados() {
+  var props = PropertiesService.getScriptProperties();
+  var last = parseInt(props.getProperty("lastProcessedIndex")) || 0;
+  var total = parseInt(props.getProperty("totalCertificados")) || 0;
+
+  var porcentaje = total ? Math.floor((last / total) * 100) : 0;
+
+  return {
+    porcentaje: porcentaje,
+    mensaje: "Generando certificados...",
+    generados: last,
+    total: total
+  };
 }

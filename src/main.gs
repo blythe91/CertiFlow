@@ -36,5 +36,9 @@ function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSiz
 
 function detenerGeneracionCertificados() {
   eliminarTrigger();
+
   PropertiesService.getScriptProperties().deleteAllProperties();
+  PropertiesService.getScriptProperties().deleteProperty("lastProcessedIndex");
+  PropertiesService.getScriptProperties().deleteProperty("totalCertificados");
+
 }

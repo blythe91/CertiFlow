@@ -71,9 +71,22 @@
             .procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, defaultBatchSize);
         })
         .obtenerBatchSizePorDefecto();
+
+        let progresoInterval = setInterval(() => {
+          google.script.run
+            .withSuccessHandler((datos) => {
+              actualizarProgreso(datos);
+
+              if (datos.porcentaje >= 100) {
+                clearInterval(progresoInterval);
+              }
+            })
+            .obtenerProgresoCertificados();
+        }, 1000); // cada segundo
+
     }
 
-
+    
     function detenerProceso() {
       google.script.run
         .withSuccessHandler(() => {
