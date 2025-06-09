@@ -1,4 +1,4 @@
-const DEFAULT_BATCH_SIZE = 50;
+const DEFAULT_BATCH_SIZE = 30;
 
 function obtenerBatchSizePorDefecto() {
   return DEFAULT_BATCH_SIZE;

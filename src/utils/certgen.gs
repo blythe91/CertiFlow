@@ -124,21 +124,27 @@ function generarCertificados(sheet_Id, template_Id, folder_Id, batch_size) {
  * @param {number} batch_size
  */
 function triggerGenerarCertificados(sheet_Id, template_Id, folder_Id, batch_size) {
-  // Primero elimina triggers existentes para evitar duplicados
-  eliminarTrigger();
+  // Elimina cualquier trigger anterior de esta función
+  eliminarTrigger();  // Esto ya lo haces bien
 
-  // Guarda los parámetros necesarios para la próxima ejecución en las propiedades del script
+  // Evita crear un nuevo trigger si ya hay uno agendado (doble verificación opcional)
+  var triggers = ScriptApp.getProjectTriggers();
+  var existe = triggers.some(t => t.getHandlerFunction() === "continuarGeneracionCertificados");
+  if (existe) return;  // Ya hay uno activo, no creamos otro
+
+  // Guarda parámetros
   PropertiesService.getScriptProperties().setProperty("sheet_Id", sheet_Id);
   PropertiesService.getScriptProperties().setProperty("template_Id", template_Id);
   PropertiesService.getScriptProperties().setProperty("folder_Id", folder_Id);
   PropertiesService.getScriptProperties().setProperty("batch_size", batch_size.toString());
 
-  // Crea un trigger que ejecutará la función continuarGeneracionCertificados luego de 1 minuto (60000 ms)
+  // Crea nuevo trigger para continuar después de 50 segundos
   ScriptApp.newTrigger("continuarGeneracionCertificados")
     .timeBased()
-    .after(60000)
+    .after(50000)
     .create();
 }
+
 
 /**
  * Función disparada por el trigger para continuar la generación de certificados.
