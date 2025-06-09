@@ -20,17 +20,17 @@ function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSiz
   Logger.log("URL de hoja de cálculo: " + sheetUrl);
   Logger.log("ID de hoja de cálculo: " + sheetId);
   Logger.log("////////////////");
-  Logger.log("URL de hoja de cálculo: " + templateUrl);
-  Logger.log("ID de hoja de cálculo: " + templateId);
+  Logger.log("URL de la plantilla del certificado: " + templateUrl);
+  Logger.log("ID de la plantilla del certificado: " + templateId);
   Logger.log("////////////////");
-  Logger.log("URL de hoja de cálculo: " + folderUrl);
-  Logger.log("ID de hoja de cálculo: " + folderId);
+  Logger.log("URL de carpeta destino: " + folderUrl);
+  Logger.log("ID de carpeta destino: " + folderId);
 
   if (!sheetId || !templateId || !folderId) {
     throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
   }
 
-  //generarCertificados(sheetId, templateId, folderId, batchSize);
+  generarCertificados(sheetId, templateId, folderId, batchSize);
 }
 
 
