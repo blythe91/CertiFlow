@@ -41,5 +41,12 @@ function mostrarModalEnviarPorFilas() {
   const html = HtmlService.createHtmlOutputFromFile('modal_send_rows')
     .setWidth(450)
     .setHeight(380);
-  SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
+  SpreadsheetApp.getUi().showModalDialog(html, 'Enviar Certificados');
+}
+
+function mostrarModalEnviarPorRango() {
+  const html = HtmlService.createHtmlOutputFromFile('modal_send_range')
+    .setWidth(450)
+    .setHeight(380);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Enviar Certificados');
 }
