@@ -3,21 +3,10 @@
 <head>
   <base target="_top">
   <style>
-    #progressBarContainer {
+    textarea {
       width: 100%;
-      background-color: #ccc;
-      border-radius: 5px;
-      margin-top: 10px;
-      display: none;
-    }
-
-    #progressBar {
-      width: 0%;
-      height: 20px;
-      background-color: #4caf50;
-      text-align: center;
-      color: white;
-      border-radius: 5px;
+      height: 150px;
+      resize: vertical;
     }
   </style>
 </head>
@@ -34,17 +23,22 @@
     <input type="text" id="folderUrl" name="folderUrl" required><br><br>
 
     <input type="button" id="generateBtn" value="Generar Certificados" onclick="iniciarGeneracion()">
-    <input type="button" id="stopBtn" value="Detener" onclick="detenerProceso()">
+    <input type="button" id="stopBtn" value="Detener" onclick="detenerProceso()" disabled>
   </form>
 
   <p id="statusMessage"></p>
   <p id="certCount"></p>
 
-  <div id="progressBarContainer">
-    <div id="progressBar">0%</div>
+  <!-- Modal de Logs -->
+  <div id="logModal" style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); width:80%; max-height:70%; overflow:auto; background:white; border:2px solid #444; padding:15px; z-index:9999; box-shadow: 0px 4px 8px rgba(0,0,0,0.3); border-radius: 10px;">
+    <h3>📝 Registro de Ejecución</h3>
+    <pre id="logContenido" style="white-space: pre-wrap;"></pre>
+    <button onclick="cerrarLogModal()">Cerrar</button>
   </div>
 
   <script>
+    let intervaloProgreso;
+
     function iniciarGeneracion() {
       const sheetUrl = document.getElementById('sheetUrl').value.trim();
       const templateUrl = document.getElementById('templateUrl').value.trim();
@@ -52,63 +46,76 @@
 
       if (!sheetUrl || !templateUrl || !folderUrl) {
         alert("Por favor, completa todos los campos.");
+        logMensaje("❌ Campos requeridos incompletos. Operación cancelada.");
         return;
       }
 
       bloquearFormulario(true);
-      document.getElementById('progressBarContainer').style.display = "block";
-      actualizarProgreso({ porcentaje: 0, mensaje: "Preparando datos...", generados: 0, total: 0 });
 
-      // Obtener valor por defecto desde el backend
+      logMensaje("📥 Iniciando generación de certificados...");
+      logMensaje("🔗 Hoja de cálculo: " + sheetUrl);
+      logMensaje("📄 Plantilla: " + templateUrl);
+      logMensaje("📁 Carpeta destino: " + folderUrl);
+
       google.script.run
         .withSuccessHandler(function(defaultBatchSize) {
+          logMensaje("📦 Tamaño de lote: " + defaultBatchSize);
+          logMensaje("🚀 Ejecutando proceso de generación...");
+
           google.script.run
-            .withSuccessHandler(actualizarProgreso)
+            .withSuccessHandler(() => {
+              logMensaje("✅ Todos los certificados fueron generados satisfactoriamente.");
+              bloquearFormulario(false);
+              clearInterval(intervaloProgreso);
+            })
             .withFailureHandler((error) => {
               alert("Error al generar certificados: " + error.message);
+              logMensaje("❌ Error: " + error.message);
               bloquearFormulario(false);
+              clearInterval(intervaloProgreso);
             })
             .procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, defaultBatchSize);
+
+          // Inicia seguimiento de progreso cada 10 segundos
+          intervaloProgreso = setInterval(() => {
+            google.script.run
+              .withSuccessHandler((datos) => {
+                actualizarProgreso(datos);
+                logMensaje(`📊 Generados: ${datos.generados} / ${datos.total}`);
+              })
+              .withFailureHandler((error) => {
+                logMensaje("❌ Error en seguimiento: " + error.message);
+              })
+              .obtenerProgresoCertificados();
+          }, 10000); // cada 10 segundos
+        })
+        .withFailureHandler((error) => {
+          alert("Error al obtener tamaño de lote: " + error.message);
+          logMensaje("❌ Error al obtener tamaño de lote: " + error.message);
+          bloquearFormulario(false);
         })
         .obtenerBatchSizePorDefecto();
-
-        let progresoInterval = setInterval(() => {
-          google.script.run
-            .withSuccessHandler((datos) => {
-              actualizarProgreso(datos);
-
-              if (datos.porcentaje >= 100) {
-                clearInterval(progresoInterval);
-              }
-            })
-            .obtenerProgresoCertificados();
-        }, 1000); // cada segundo
-
     }
 
-    
     function detenerProceso() {
       google.script.run
         .withSuccessHandler(() => {
           alert("Proceso detenido.");
+          logMensaje("⛔ Proceso detenido por el usuario.");
           bloquearFormulario(false);
+          clearInterval(intervaloProgreso);
         })
         .detenerGeneracionCertificados();
     }
 
     function actualizarProgreso(datos) {
-      var progressBar = document.getElementById('progressBar');
-      var statusMessage = document.getElementById('statusMessage');
-      var certCount = document.getElementById('certCount');
-
-      progressBar.style.width = datos.porcentaje + "%";
-      progressBar.textContent = datos.porcentaje + "%";
-      statusMessage.textContent = datos.mensaje;
-      certCount.textContent = `Certificados generados: ${datos.generados} / ${datos.total}`;
+      document.getElementById('statusMessage').textContent = datos.mensaje;
+      document.getElementById('certCount').textContent = `Certificados generados: ${datos.generados} / ${datos.total}`;
 
       if (datos.porcentaje >= 100) {
         bloquearFormulario(false);
-        progressBar.textContent = "Completado";
+        logMensaje("✅ Proceso finalizado correctamente.");
+        clearInterval(intervaloProgreso);
       }
     }
 
@@ -118,6 +125,18 @@
       document.getElementById('folderUrl').disabled = bloquear;
       document.getElementById('generateBtn').disabled = bloquear;
       document.getElementById('stopBtn').disabled = !bloquear;
+    }
+
+    function logMensaje(msg) {
+      const logModal = document.getElementById("logModal");
+      const logContenido = document.getElementById("logContenido");
+      logModal.style.display = "block";
+      const hora = new Date().toLocaleTimeString();
+      logContenido.textContent += `[${hora}] ${msg}\n`;
+    }
+
+    function cerrarLogModal() {
+      document.getElementById("logModal").style.display = "none";
     }
   </script>
 </body>
