@@ -1,6 +1,6 @@
 
 
-function procesarYEnviar(sheetUrl, folderUrl, batchSize, mensajeEmail, digitoControl) {
+function procesarYEnviarTotalCertificados(sheetUrl, folderUrl, batchSize, mensajeEmail, digitoControl) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);
   const folderId = obtenerIdCarpeta(folderUrl);
 
@@ -21,6 +21,32 @@ function procesarYEnviar(sheetUrl, folderUrl, batchSize, mensajeEmail, digitoCon
     throw e;
   }
 }
+
+
+
+function procesarYEnviarCertificadosPorFilas(filasSeleccionadas, sheetUrl, folderUrl, mensajeEmail) {
+  const sheetId = obtenerIdHojaCalculo(sheetUrl);
+  const folderId = obtenerIdCarpeta(folderUrl);
+
+  Logger.log("URL de hoja de cálculo: " + sheetUrl);
+  Logger.log("ID de hoja de cálculo: " + sheetId);
+  Logger.log("////////////////");
+  Logger.log("URL de carpeta destino: " + folderUrl);
+  Logger.log("ID de carpeta destino: " + folderId);
+
+  if (!sheetId || !folderId) {
+    throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
+  }
+  try {
+    enviarCertificadosEmailPorFilas(sheetId, folderId, filasSeleccionadas, mensajeEmail);
+    return;
+  } catch (e) {
+    Logger.log("❌ Error en enviarCertificadosEmailPorFilas: " + e.message);
+    throw e;
+  }
+}
+
+
 
 function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSize) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);

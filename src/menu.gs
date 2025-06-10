@@ -36,3 +36,10 @@ function mostrarModalCertificadosPorFilas() {
     .setHeight(380);
   SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
 }
+
+function mostrarModalEnviarPorFilas() {
+  const html = HtmlService.createHtmlOutputFromFile('modal_send_rows')
+    .setWidth(450)
+    .setHeight(380);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
+}

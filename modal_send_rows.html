@@ -11,28 +11,26 @@
   </style>
 </head>
 <body>
-  <h2>Generar Certificados Por Filas</h2>
-  <form id="specificForm" onsubmit="return false;">
+  <h2>Enviar Certificados Por Filas</h2>
+  <form id="sendRowsForm" onsubmit="return false;">
     <label for="sheetUrl">URL de la Hoja de Cálculo:</label><br>
     <input type="text" id="sheetUrl" name="sheetUrl" required><br><br>
 
-    <label for="templateUrl">URL de la Plantilla:</label><br>
-    <input type="text" id="templateUrl" name="templateUrl" required><br><br>
-
-    <label for="folderUrl">URL de la Carpeta Destino:</label><br>
+    <label for="folderUrl">URL de la Carpeta con los Certificados:</label><br>
     <input type="text" id="folderUrl" name="folderUrl" required><br><br>
 
-    <label for="specificRows">ID de los certificados a generar (COL-A: ej. 2,4,7, máx. 30):</label><br>
+    <label for="mensajeEmail">Cuerpo del Correo Electrónico:</label><br>
+    <textarea id="mensajeEmail" name="mensajeEmail" placeholder="Ingrese el mensaje que se enviará por correo..."></textarea><br><br>
+
+    <label for="specificRows">ID de los certificados a enviar (COL-A: ej. 2,4,7, máx. 30):</label><br>
     <input type="text" id="specificRows" name="specificRows" required
-           placeholder="2,4,7 (máx. 30 filas)" pattern="^\d+(,\d+)*$"
+           placeholder="2,4,7 (máx. 30 filas)"
+           pattern="^\d+(,\d+)*$"
            title="Ingresa hasta 30 números separados por comas, sin espacios. Ejemplo: 2,5,9"><br><br>
 
-    <input type="button" id="generateBtn" value="Generar Certificados" onclick="iniciarGeneracionEspecifica()">
-    <input type="button" id="stopBtn" value="Detener" onclick="detenerProceso()" disabled>
+    <input type="button" id="sendBtn" value="Enviar Certificados" onclick="iniciarEnvioFiltrado()">
+    <input type="button" id="stopBtn" value="Detener" onclick="detenerEnvio()" disabled>
   </form>
-
-  <p id="statusMessage"></p>
-  <p id="certCount"></p>
 
   <!-- Modal de Logs -->
   <div id="logModal" style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); width:80%; max-height:70%; overflow:auto; background:white; border:2px solid #444; padding:15px; z-index:9999; box-shadow: 0px 4px 8px rgba(0,0,0,0.3); border-radius: 10px;">
@@ -42,16 +40,14 @@
   </div>
 
   <script>
-    let intervaloProgreso;
-
-    function iniciarGeneracionEspecifica() {
+    function iniciarEnvioFiltrado() {
       const sheetUrl = document.getElementById('sheetUrl').value.trim();
-      const templateUrl = document.getElementById('templateUrl').value.trim();
       const folderUrl = document.getElementById('folderUrl').value.trim();
+      const mensajeEmail = document.getElementById('mensajeEmail').value.trim();
       const specificRows = document.getElementById('specificRows').value.trim();
 
-      if (!sheetUrl || !templateUrl || !folderUrl || !specificRows) {
-        alert("Por favor, completa todos los campos.");
+      if (!sheetUrl || !folderUrl || !specificRows) {
+        alert("Por favor, completa todos los campos obligatorios.");
         logMensaje("❌ Campos requeridos incompletos. Operación cancelada.");
         return;
       }
@@ -62,68 +58,48 @@
         return;
       }
 
+      const filas = specificRows.split(',');
+      if (filas.length > 30) {
+        alert("Solo puedes enviar hasta 30 certificados por ejecución.");
+        logMensaje("❌ Se excedió el límite de 30 certificados.");
+        return;
+      }
+
       bloquearFormulario(true);
-      logMensaje("📥 Iniciando generación de certificados por filas...");
-      logMensaje("🔗 Hoja: " + sheetUrl);
-      logMensaje("📄 Plantilla: " + templateUrl);
-      logMensaje("📁 Carpeta: " + folderUrl);
+      logMensaje("📥 Iniciando envío de certificados por filas...");
+      logMensaje("🔗 Hoja de cálculo: " + sheetUrl);
+      logMensaje("📁 Carpeta de certificados: " + folderUrl);
       logMensaje("🎯 Filas: " + specificRows);
 
       google.script.run
         .withSuccessHandler(() => {
-          logMensaje("✅ Todos los certificados por filas fueron generados satisfactoriamente.");
+          logMensaje("✅ Certificados enviados satisfactoriamente.");
           bloquearFormulario(false);
-          clearInterval(intervaloProgreso);
         })
         .withFailureHandler((error) => {
-          alert("Error al generar certificados específicos: " + error.message);
-          logMensaje("❌ Error: " + error.message);
+          alert("Error en el envío: " + error.message);
+          logMensaje("❌ Error en el envío: " + error.message);
           bloquearFormulario(false);
-          clearInterval(intervaloProgreso);
         })
-        .procesarYGenerarCertificadosPorFilas(specificRows, sheetUrl, templateUrl, folderUrl);
-
-      intervaloProgreso = setInterval(() => {
-        google.script.run
-          .withSuccessHandler((datos) => {
-            actualizarProgreso(datos);
-            logMensaje(`📊 Generados: ${datos.generados} / ${datos.total}`);
-          })
-          .withFailureHandler((error) => {
-            logMensaje("❌ Error en seguimiento: " + error.message);
-          })
-          .obtenerProgresoCertificados();
-      }, 10000); // cada 10 segundos
+        .procesarYEnviarCertificadosPorFilas(specificRows, sheetUrl, folderUrl, mensajeEmail);
     }
 
-    function detenerProceso() {
+    function detenerEnvio() {
       google.script.run
         .withSuccessHandler(() => {
           alert("Proceso detenido.");
-          logMensaje("⛔ Proceso detenido por el usuario.");
           bloquearFormulario(false);
-          clearInterval(intervaloProgreso);
+          logMensaje("⛔ Proceso detenido por el usuario.");
         })
-        .detenerGeneracionCertificados();
-    }
-
-    function actualizarProgreso(datos) {
-      document.getElementById('statusMessage').textContent = datos.mensaje;
-      document.getElementById('certCount').textContent = `Certificados generados: ${datos.generados} / ${datos.total}`;
-
-      if (datos.porcentaje >= 100) {
-        bloquearFormulario(false);
-        logMensaje("✅ Proceso finalizado correctamente.");
-        clearInterval(intervaloProgreso);
-      }
+        .detenerEnvioCertificados();
     }
 
     function bloquearFormulario(bloquear) {
       document.getElementById('sheetUrl').disabled = bloquear;
-      document.getElementById('templateUrl').disabled = bloquear;
       document.getElementById('folderUrl').disabled = bloquear;
+      document.getElementById('mensajeEmail').disabled = bloquear;
       document.getElementById('specificRows').disabled = bloquear;
-      document.getElementById('generateBtn').disabled = bloquear;
+      document.getElementById('sendBtn').disabled = bloquear;
       document.getElementById('stopBtn').disabled = !bloquear;
     }
 
