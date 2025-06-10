@@ -1,93 +1,127 @@
-# certificate-generator-gas
+# CertiFlow 🎓📧
+
+**CertiFlow** es una librería de Google Apps Script para la generación y envío masivo de certificados digitales en formato PDF, a partir de una base de datos en Google Sheets y una plantilla de Google Slides. Facilita automatizar todo el proceso, con opciones flexibles para seleccionar filas específicas o rangos, y envío por correo electrónico de manera eficiente.
+
+---
+
+## Características principales ✨
+
+- Generación masiva de certificados en lotes (por defecto 30 certificados por ejecución).  
+- Generación basada en filas específicas, separadas por comas sin espacios.  
+- Envío masivo de certificados por correo electrónico en lotes.  
+- Envío de certificados por correo electrónico para filas específicas y para rangos definidos (mínimo 5, máximo 30 filas).  
+- Controla la generación para evitar duplicados, no genera certificados ya existentes.  
+- Muestra resumen de progreso en pantalla con mensajes claros durante la ejecución.  
+- Interfaz gráfica amigable integrada en un menú personalizado dentro de Google Sheets.  
+
+---
+
+## Requisitos 📝
+
+- Tener un Google Spreadsheet con estos encabezados EXACTOS:
+    - ID  
+    - primer_nombre  
+    - segundo_nombre  
+    - primer_apellido  
+    - segundo_apellido  
+    - prefijo_documento_identidad  
+    - documento_identidad  
+    - correo_electrónico  
+    - Celular  
+    - tipo-participante  
+    - nombre-evento  
+    - cod-evento  
+    - cod-certtificado  
+    - modalidad  
+    - dur-hr-acad  
+    - fecha-apertura  
+    - fecha-clausura  
+    - texto-fecha  
+    - ubicacion  
+    - URL_Certificado
+
+- La plantilla de Google Slides debe contener los siguientes marcadores encerrado en llaves {}:
+    - nombre-participante  
+    - di-participante  
+    - tipo-participante  
+    - nombre-evento  
+    - modalidad  
+    - horas  
+    - texto-fecha  
+    - ubicacion  
+    - cod-certificado
 
 
+- La primera ejecución requiere autorización de permisos de Google Apps Script para acceso a Gmail, Drive y Sheets.  
+- Puede agregarse una página adicional como contraportada para contenido extra en el certificado (como temario o contenido programático).  
+- Los datos de correos y códigos deben estar correctamente ingresados; la librería no verifica duplicados de registros.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Instalación ⚙️
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. Clona o descarga el repositorio en tu máquina local.  
+2. Instala [clasp](https://github.com/google/clasp) y configura sus pre-requisitos (Node.js, npm).  
+3. Ejecuta `clasp login` para conectar con tu cuenta Google que contiene las hojas de cálculo y Drive a usar.  
+4. Usa `clasp push` para subir el proyecto a tu entorno de Google Apps Script.  
+5. Desde tu Google Spreadsheet, al abrir el archivo, verás un menú nuevo llamado **Certificados** para ejecutar las funciones.  
 
-## Add your files
+*Nota:* Pronto se publicará como librería oficial para importarla directamente sin necesidad de descargar, pero aún está en desarrollo.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+---
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/equipo-de-desarrollo-del-decanato-de-investigaci-n/certificate-generator-gas.git
-git branch -M main
-git push -uf origin main
-```
+## Uso 🚀
 
-## Integrate with your tools
+Al abrir tu Google Spreadsheet, en el menú principal verás una nueva opción:
 
-- [ ] [Set up project integrations](https://gitlab.com/equipo-de-desarrollo-del-decanato-de-investigaci-n/certificate-generator-gas/-/settings/integrations)
+Certificados
+├── Generar certificados
+│ ├── Todos
+│ └── Por filas
+└── Enviar certificados
+├── Todos
+├── Por filas
+└── Por rango de filas
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Cada opción abre una interfaz gráfica sencilla para que puedas ingresar los datos necesarios (URL de spreadsheet, plantilla, carpeta Drive, filas o rangos, mensaje personalizado) y ejecutar la acción deseada.
 
-## Test and Deploy
+---
 
-Use the built-in continuous integration in GitLab.
+## Configuración avanzada 🛠️
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- Puedes modificar el tamaño de lote por defecto (30 certificados) en el archivo `utils/utils.gs`, línea 1:
 
-***
+  ```javascript
+  const DEFAULT_BATCH_SIZE = 30;
 
-# Editing this README
+Se permite ingresar URLs completas para hoja de cálculo, plantilla de Slides o carpeta Drive, la librería extraerá automáticamente los IDs usando expresiones regulares.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Estructura del proyecto 📂
 
-## Suggestions for a good README
+src/
+├── libs/
+│   ├── cert_sender_all.gs         # Envío masivo de certificados por correo
+│   ├── cert_sender_range.gs       # Envío de certificados por rango de filas (5 a 30)
+│   ├── cert_sender_rows.gs        # Envío de certificados por filas específicas
+│   ├── certgen_all.gs             # Generación masiva de certificados
+│   ├── certgen_rows.gs            # Generación por filas específicas
+├── utils/
+│   └── utils.gs                  # Funciones utilitarias y configuraciones
+├── main.gs                      # Kernel principal de la librería
+├── menu.gs                      # Manejo del menú y GUI en Sheets
+├── modal_cert_all.html          # Modal para generar certificados masivos
+├── modal_cert_rows.html         # Modal para generar certificados por filas
+├── modal_send_all.html          # Modal para enviar certificados masivos
+├── modal_send_range.html        # Modal para enviar certificados por rango
+├── modal_send_rows.html         # Modal para enviar certificados por filas específicas
+└── README.md                   # Este archivo
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Autor 👨‍💻
+Oscar Giovanni Castro Contreras
+Ingeniero en Informática
+📧 oscargiovanni.castro@gmail.com
+📱 +58 414 703 9597
 
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Licencia 📜
+Este proyecto está bajo licencia MIT. ¡Usa, modifica y comparte libremente!
