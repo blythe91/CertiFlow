@@ -1,41 +1,4 @@
-function onOpen() {
-  const ui = SpreadsheetApp.getUi();
 
-  ui.createMenu('Certificados')
-    .addSubMenu(
-      ui.createMenu('Generar Certificados')
-        .addItem('Todos', 'mostrarModalCertificados')
-        .addItem('Por Filas', 'mostrarModalCertificadosPorFilas')
-    )
-    .addSubMenu(
-      ui.createMenu('Enviar Certificados')
-        .addItem('Todos', 'mostrarModalEnviarTodos')
-        .addItem('Por Filas', 'mostrarModalEnviarPorFilas')
-        .addItem('Por Rango de Filas', 'mostrarModalEnviarPorRango')
-    )
-    .addToUi();
-}
-
-function mostrarModalEnviarTodos() {
-  const html = HtmlService.createHtmlOutputFromFile('modal_send_all')
-    .setWidth(450)
-    .setHeight(380);
-  SpreadsheetApp.getUi().showModalDialog(html, 'Enviar Certificados');
-}
-
-function mostrarModalCertificados() {
-  const html = HtmlService.createHtmlOutputFromFile('modal_cert_all')
-    .setWidth(450)
-    .setHeight(380);
-  SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
-}
-
-function mostrarModalCertificadosPorFilas() {
-  const html = HtmlService.createHtmlOutputFromFile('modal_cert_rows')
-    .setWidth(450)
-    .setHeight(380);
-  SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
-}
 
 function procesarYEnviar(sheetUrl, folderUrl, batchSize, mensajeEmail, digitoControl) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);
@@ -58,31 +21,6 @@ function procesarYEnviar(sheetUrl, folderUrl, batchSize, mensajeEmail, digitoCon
     throw e;
   }
 }
-
-/*function procesarYEnviarCertificados2(sheetUrl, folderUrl, batchSize, mensajeEmail) {
-
-  const sheetId = obtenerIdHojaCalculo(sheetUrl);
-  const folderId = obtenerIdCarpeta(folderUrl);
-
-  Logger.log(`✅ ProcesarYEnviarCertificados inició correctamente`);
-
-  Logger.log("URL de hoja de cálculo: " + sheetUrl);
-  Logger.log("ID de hoja de cálculo: " + sheetId);
-  Logger.log("////////////////");
-  Logger.log("URL de carpeta destino: " + folderUrl);
-  Logger.log("ID de carpeta destino: " + folderId);
-
-  if (!sheetId || !folderId) {
-    throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
-  }
-
-  try {
-    enviarCertificadosEmail(sheetId, folderId, batchSize, mensajeEmail);
-  } catch (e) {
-    Logger.log("❌ Error en enviarCertificadosEmail: " + e.message);
-    throw e;
-  }
-}*/
 
 function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSize) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);
