@@ -16,8 +16,6 @@ function onOpen() {
     .addToUi();
 }
 
-mostrarModalEnviarTodos
-
 function mostrarModalEnviarTodos() {
   const html = HtmlService.createHtmlOutputFromFile('modal_send_all')
     .setWidth(450)
@@ -39,7 +37,7 @@ function mostrarModalCertificadosPorFilas() {
   SpreadsheetApp.getUi().showModalDialog(html, 'Generar Certificados');
 }
 
-function procesarYEnviarCertificados(sheetUrl, folderUrl, batchSize, mensajeEmail) {
+function procesarYEnviar(sheetUrl, folderUrl, batchSize, mensajeEmail, digitoControl) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);
   const folderId = obtenerIdCarpeta(folderUrl);
 
@@ -52,9 +50,39 @@ function procesarYEnviarCertificados(sheetUrl, folderUrl, batchSize, mensajeEmai
   if (!sheetId || !folderId) {
     throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
   }
-
-  enviarCertificadosEmail(sheetId, folderId, batchSize, mensajeEmail);
+  try {
+    enviarCertificadosEmail(sheetId, folderId, batchSize, mensajeEmail);
+    return;
+  } catch (e) {
+    Logger.log("❌ Error en enviarCertificadosEmail: " + e.message);
+    throw e;
+  }
 }
+
+/*function procesarYEnviarCertificados2(sheetUrl, folderUrl, batchSize, mensajeEmail) {
+
+  const sheetId = obtenerIdHojaCalculo(sheetUrl);
+  const folderId = obtenerIdCarpeta(folderUrl);
+
+  Logger.log(`✅ ProcesarYEnviarCertificados inició correctamente`);
+
+  Logger.log("URL de hoja de cálculo: " + sheetUrl);
+  Logger.log("ID de hoja de cálculo: " + sheetId);
+  Logger.log("////////////////");
+  Logger.log("URL de carpeta destino: " + folderUrl);
+  Logger.log("ID de carpeta destino: " + folderId);
+
+  if (!sheetId || !folderId) {
+    throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
+  }
+
+  try {
+    enviarCertificadosEmail(sheetId, folderId, batchSize, mensajeEmail);
+  } catch (e) {
+    Logger.log("❌ Error en enviarCertificadosEmail: " + e.message);
+    throw e;
+  }
+}*/
 
 function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSize) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);

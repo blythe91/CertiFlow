@@ -1,5 +1,10 @@
 function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize, textEmail) {
+  Logger.log("📄 sheet_ID recibido en enviarCertificadosEmail: " + sheet_Id);
+  Logger.log("📄 folder_Id recibido en enviarCertificadosEmail: " + folder_Id);
+  Logger.log("📄 batchSize recibido en enviarCertificadosEmail: " + batchSize);
+  
   try {
+
     var sheet = SpreadsheetApp.openById(sheet_Id).getSheetByName("data");
     var data = sheet.getDataRange().getValues();
     var folder = DriveApp.getFolderById(folder_Id);
@@ -76,10 +81,11 @@ function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize, textEmail) {
       props.deleteProperty("totalEnviados");
       eliminarTriggerEnvio();
       Logger.log("Todos los certificados fueron enviados.");
+      return;
     }
 
   } catch (e) {
-    Logger.log("Error en enviarCertificadosEmail: " + e.toString());
+    Logger.log("Error en enviarCertificadosEmail (dentro de enviarCertificadosEmail): " + e.toString());
   }
 }
 
