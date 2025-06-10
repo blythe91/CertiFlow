@@ -46,7 +46,27 @@ function procesarYEnviarCertificadosPorFilas(filasSeleccionadas, sheetUrl, folde
   }
 }
 
+function procesarYEnviarCertificadosPorRango(startRow, endRow, sheetUrl, folderUrl, mensajeEmail){
+  const sheetId = obtenerIdHojaCalculo(sheetUrl);
+  const folderId = obtenerIdCarpeta(folderUrl);
 
+  Logger.log("URL de hoja de cálculo: " + sheetUrl);
+  Logger.log("ID de hoja de cálculo: " + sheetId);
+  Logger.log("////////////////");
+  Logger.log("URL de carpeta destino: " + folderUrl);
+  Logger.log("ID de carpeta destino: " + folderId);
+
+  if (!sheetId || !folderId) {
+    throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
+  }
+  try {
+    enviarCertificadosEmailPorRango(startRow, endRow, sheetId, folderId, mensajeEmail);
+    return;
+  } catch (e) {
+    Logger.log("❌ Error en enviarCertificadosEmailPorFilas: " + e.message);
+    throw e;
+  }
+}
 
 function procesarYGenerarCertificados(sheetUrl, templateUrl, folderUrl, batchSize) {
   const sheetId = obtenerIdHojaCalculo(sheetUrl);

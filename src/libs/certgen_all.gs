@@ -9,111 +9,72 @@
  */
 function generarCertificados(sheet_Id, template_Id, folder_Id, batch_size) {
   try {
-    // Abre la hoja de cálculo y obtiene todos los datos de la hoja "data"
-    var sheet = SpreadsheetApp.openById(sheet_Id).getSheetByName("data");
-    var data = sheet.getDataRange().getValues();
+    const sheet = SpreadsheetApp.openById(sheet_Id).getSheetByName("data");
+    const data = sheet.getDataRange().getValues();
+    const folder = DriveApp.getFolderById(folder_Id);
 
-    PropertiesService.getScriptProperties().setProperty("totalCertificados", data.length - 1); // excluye encabezado
+    PropertiesService.getScriptProperties().setProperty("totalCertificados", data.length - 1);
 
-    
-    // Obtiene la carpeta de Drive donde se guardarán los certificados PDF
-    var folder = DriveApp.getFolderById(folder_Id);
+    let lastProcessedIndex = PropertiesService.getScriptProperties().getProperty("lastProcessedIndex");
+    let startIndex = lastProcessedIndex ? parseInt(lastProcessedIndex) + 1 : 1;
+    let endIndex = Math.min(startIndex + batch_size, data.length);
 
-    // Recupera el índice del último certificado procesado para continuar donde quedó
-    var lastProcessedIndex = PropertiesService.getScriptProperties().getProperty("lastProcessedIndex");
-    var startIndex = lastProcessedIndex ? parseInt(lastProcessedIndex) + 1 : 1; // Si no hay registro, empieza en 1
-    var endIndex = Math.min(startIndex + batch_size, data.length); // Límite máximo para batch
+    for (let i = startIndex; i < endIndex; i++) {
+      const row = data[i];
+      const nombreCompleto = `${row[1]} ${row[2] || ""} ${row[3]} ${row[4] || ""}`.trim();
+      const documentoIdentidad = (row[5] ? row[5] + " " : "") + row[6];
+      const codigoCertificado = row[12];
+      const nombreCertificado = `Certificado_${codigoCertificado}_${row[1]}_${row[3]}.pdf`;
 
-    // Itera sobre el rango de participantes a procesar en este lote
-    for (var i = startIndex; i < endIndex; i++) {
-      // Extrae los datos relevantes de cada fila (participante)
-      var primerNombre = data[i][1];
-      var segundoNombre = data[i][2];
-      var primerApellido = data[i][3];
-      var segundoApellido = data[i][4];
-      var prefijoDoc = data[i][5];
-      var docIdentidad = data[i][6];
-      var tipoParticipante = data[i][9];
-      var nombreEvento = data[i][10];
-      var modalidad = data[i][13];
-      var horas = data[i][14];
-      var textoFecha = data[i][17];
-      var ubicacion = data[i][18];
-      var codigoCertificado = data[i][12];
-
-      // Construye el nombre completo y el documento con prefijo si existe
-      var nombreCompleto = primerNombre + " " + (segundoNombre || "") + " " + primerApellido + " " + (segundoApellido || "");
-      nombreCompleto = nombreCompleto.trim();
-      var documentoIdentidad = (prefijoDoc ? prefijoDoc + " " : "") + docIdentidad;
-
-      // Nombre que tendrá el archivo PDF del certificado
-      var nombreCertificado = "Certificado_" + codigoCertificado + "_" + primerNombre + "_" + primerApellido + ".pdf";
-
-      // Verifica si el certificado ya existe para evitar duplicados
-      var archivos = folder.getFilesByName(nombreCertificado);
-      if (archivos.hasNext()) {
-        Logger.log("El certificado " + nombreCertificado + " ya existe. Se omite.");
-        continue; // Salta al siguiente participante
+      if (folder.getFilesByName(nombreCertificado).hasNext()) {
+        Logger.log("Certificado ya existe: " + nombreCertificado);
+        continue;
       }
 
-      // Crea una copia temporal de la plantilla para personalizar
-      var slideCopy = DriveApp.getFileById(template_Id).makeCopy("Temp_" + nombreCertificado, folder);
-      var presentation = SlidesApp.openById(slideCopy.getId());
-      var slide = presentation.getSlides()[0];
+      const slideCopy = DriveApp.getFileById(template_Id).makeCopy("Temp_" + nombreCertificado, folder);
+      const presentation = SlidesApp.openById(slideCopy.getId());
+      const slide = presentation.getSlides()[0];
 
-      // Reemplaza los marcadores de posición en la diapositiva con los datos personalizados
       slide.replaceAllText("{{nombre-participante}}", nombreCompleto);
       slide.replaceAllText("{{di-participante}}", documentoIdentidad);
-      slide.replaceAllText("{{tipo-participante}}", tipoParticipante);
-      slide.replaceAllText("{{nombre-evento}}", nombreEvento);
-      slide.replaceAllText("{{modalidad}}", modalidad);
-      slide.replaceAllText("{{horas}}", horas);
-      slide.replaceAllText("{{texto-fecha}}", textoFecha);
-      slide.replaceAllText("{{ubicacion}}", ubicacion);
+      slide.replaceAllText("{{tipo-participante}}", row[9]);
+      slide.replaceAllText("{{nombre-evento}}", row[10]);
+      slide.replaceAllText("{{modalidad}}", row[13]);
+      slide.replaceAllText("{{horas}}", row[14]);
+      slide.replaceAllText("{{texto-fecha}}", row[17]);
+      slide.replaceAllText("{{ubicacion}}", row[18]);
       slide.replaceAllText("{{cod-certificado}}", codigoCertificado);
 
-      // Guarda y cierra la presentación modificada
       presentation.saveAndClose();
 
-      // Construye la URL para exportar la presentación como PDF
-      var pdfUrl = "https://docs.google.com/presentation/d/" + slideCopy.getId() + "/export/pdf";
-
-      // Realiza la petición para obtener el PDF con autorización OAuth del script
-      var response = UrlFetchApp.fetch(pdfUrl, {
+      const pdfUrl = "https://docs.google.com/presentation/d/" + slideCopy.getId() + "/export/pdf";
+      const response = UrlFetchApp.fetch(pdfUrl, {
         headers: { Authorization: "Bearer " + ScriptApp.getOAuthToken() }
       });
 
-      // Obtiene el PDF como Blob y lo guarda en la carpeta
-      var pdfBlob = response.getBlob().setName(nombreCertificado);
+      const pdfBlob = response.getBlob().setName(nombreCertificado);
       folder.createFile(pdfBlob);
-
-      // Guarda la URL del PDF en la columna 20 (T) de la hoja para referencia futura
       sheet.getRange(i + 1, 20).setValue(pdfUrl);
 
-      // Mueve a la papelera el archivo temporal de Slides para no saturar el Drive
       DriveApp.getFileById(slideCopy.getId()).setTrashed(true);
 
-      // Actualiza la propiedad con el índice del último certificado procesado
       PropertiesService.getScriptProperties().setProperty("lastProcessedIndex", i);
     }
 
-    // Si quedan participantes pendientes, programa un trigger para continuar el proceso
+    // Aquí se decide si continuar o finalizar
     if (endIndex < data.length) {
       triggerGenerarCertificados(sheet_Id, template_Id, folder_Id, batch_size);
+      return; // Salimos de la función para dejar que el trigger continúe
     } else {
-      // Si ya terminó, elimina triggers pendientes y limpia propiedad de progreso
       eliminarTrigger();
       PropertiesService.getScriptProperties().deleteProperty("lastProcessedIndex");
       PropertiesService.getScriptProperties().deleteProperty("totalCertificados");
     }
   } catch (e) {
-    // Loguea cualquier error para facilitar depuración
-    Logger.log("Error en generarCertificados: " + e.toString());
+    Logger.log("❌ Error en generarCertificados: " + e.toString());
   }
-
-
-
 }
+
 
 /**
  * Crea un trigger temporizado para continuar la generación de certificados en un lote posterior.
