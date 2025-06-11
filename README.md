@@ -163,4 +163,4 @@ Autor 👨‍💻
 - 📱 +58 414 703 9597
 
 Licencia 📜
-Este proyecto está bajo licencia MIT. ¡Usa, modifica y comparte libremente!
+Este proyecto está bajo licencia MIT. ¡Usa, modifica y comparte libremente...!
