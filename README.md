@@ -160,11 +160,25 @@ src/
 └── README.md
 ```
 
-Autor 👨‍💻
-- Oscar Giovanni Castro Contreras
-- Ingeniero en Informática
-- 📧 oscargiovanni.castro@gmail.com
-- 📱 +58 414 703 9597
+## Licencias 📜
 
-Licencia 📜
-Este proyecto está bajo licencia MIT. ¡Usa, modifica y comparte libremente...!
+Este proyecto se distribuye bajo una política de doble licencia:
+
+- 🟦 **MIT License**: Permite el uso, modificación y distribución del código con mínima restricción, siempre que se incluya el aviso de copyright original.
+
+- 🟥 **GNU General Public License v3.0 (GPLv3)**: Si decides redistribuir este software (modificado o no), estás obligado a hacerlo bajo esta misma licencia, con el código fuente disponible y reconociendo al autor y colaboradores.
+
+### 📌 ¿Qué significa esto?
+
+Puedes elegir bajo cuál de estas dos licencias usar el proyecto:
+
+- Si quieres integrar este código en un proyecto cerrado, usa la **MIT**.
+- Si deseas que tu versión derivada siga siendo software libre, usa la **GPLv3**.
+
+---
+
+© 2025 Oscar Giovanni Castro Contreras  
+Ingeniero en Informática  
+📧 oscargiovanni.castro@gmail.com  
+📱 +58 414 703 9597
+

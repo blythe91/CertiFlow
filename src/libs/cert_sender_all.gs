@@ -1,3 +1,14 @@
+/**
+ * CertiFlow - Librería para generación y envío de certificados digitales
+ * © 2025 Oscar Giovanni Castro Contreras
+ * 
+ * Licencia dual:
+ * - MIT License (LICENSE-MIT)
+ * - GNU GPLv3 (LICENSE-GPL)
+ * 
+ * El usuario puede optar por cualquiera de estas licencias.
+ */
+
 function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize, textEmail) {
   Logger.log("📄 sheet_ID recibido en enviarCertificadosEmail: " + sheet_Id);
   Logger.log("📄 folder_Id recibido en enviarCertificadosEmail: " + folder_Id);

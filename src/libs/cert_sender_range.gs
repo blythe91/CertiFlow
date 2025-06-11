@@ -1,4 +1,15 @@
 /**
+ * CertiFlow - Librería para generación y envío de certificados digitales
+ * © 2025 Oscar Giovanni Castro Contreras
+ * 
+ * Licencia dual:
+ * - MIT License (LICENSE-MIT)
+ * - GNU GPLv3 (LICENSE-GPL)
+ * 
+ * El usuario puede optar por cualquiera de estas licencias.
+ */
+
+/**
  * Envía certificados por correo para un rango de filas dado.
  *
  * @param {number} startRow     Fila inicial (1-based).

@@ -1,4 +1,15 @@
 /**
+ * CertiFlow - Librería para generación y envío de certificados digitales
+ * © 2025 Oscar Giovanni Castro Contreras
+ * 
+ * Licencia dual:
+ * - MIT License (LICENSE-MIT)
+ * - GNU GPLv3 (LICENSE-GPL)
+ * 
+ * El usuario puede optar por cualquiera de estas licencias.
+ */
+
+/**
  * Genera certificados PDF personalizados a partir de una plantilla de Google Slides.
  * Trabaja en lotes para no exceder límites de tiempo y guarda progreso para continuar después.
  * 
