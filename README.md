@@ -84,7 +84,7 @@ Certificados
 ├── Todos
 ├── Por filas
 └── Por rango de filas
-
+```
 ![menú](assets/menu.png)
 
 ![Generar Certificados](assets/submenu1.png)
@@ -111,7 +111,7 @@ Cada opción abre una interfaz gráfica sencilla para que puedas ingresar los da
 
   ```javascript
   const DEFAULT_BATCH_SIZE = 30;
-
+```
 Se permite ingresar URLs completas para hoja de cálculo, plantilla de Slides o carpeta Drive, la librería extraerá automáticamente los IDs usando expresiones regulares.
 
 ## Estructura del proyecto 📂
@@ -134,7 +134,7 @@ src/
 ├── modal_send_range.html         # Modal para enviar certificados por rango
 ├── modal_send_rows.html          # Modal para enviar certificados por filas específicas
 └── README.md
-
+```
 
 Autor 👨‍💻
 Oscar Giovanni Castro Contreras
