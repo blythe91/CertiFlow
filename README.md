@@ -157,10 +157,10 @@ src/
 ```
 
 Autor 👨‍💻
-Oscar Giovanni Castro Contreras
-Ingeniero en Informática
-📧 oscargiovanni.castro@gmail.com
-📱 +58 414 703 9597
+- Oscar Giovanni Castro Contreras
+- Ingeniero en Informática
+- 📧 oscargiovanni.castro@gmail.com
+- 📱 +58 414 703 9597
 
 Licencia 📜
 Este proyecto está bajo licencia MIT. ¡Usa, modifica y comparte libremente!
