@@ -51,6 +51,8 @@
     - ubicacion  
     - cod-certificado
 
+# plantilla con los campos incorporados
+
 ![plantilla de Google Slides](assets/certificado.jpg)
 
 - La primera ejecución requiere autorización de permisos de Google Apps Script para acceso a Gmail, Drive y Sheets.  
@@ -85,21 +87,36 @@ Certificados
 ├── Por filas
 └── Por rango de filas
 ```
+# Menú principal en la opción "Certificados"
 ![menú](assets/menu.png)
+
+# Submenú de "Generar Certificados"
 
 ![Generar Certificados](assets/submenu1.png)
 
+# Submenú de "Enviar Certificados"
 ![Enviar Certificados](assets/submenu2.png)
 
 Cada opción abre una interfaz gráfica sencilla para que puedas ingresar los datos necesarios (URL de spreadsheet, plantilla, carpeta Drive, filas o rangos, mensaje personalizado) y ejecutar la acción deseada.
 
 # Interfaz Gráfica de las opciones de menú
 
+# Generar Certificados
 ![Generar todos los certificados](assets/todos_los_certificados.png)
+
+# Vista de ejecución
 ![Vista de ejecución](assets/ventana_ejecución.png)
+
+# Generar Certificados por filas
 ![Generar certificados por filas](assets/certificados_por_filas.png)
+
+# Enviar Certificados
 ![Enviar todos los certificados](assets/certificados_envio_todos.png)
+
+# Enviar Certificados por filas
 ![Enviar certificados por filas](assets/certificados_envio_por_filas.png)
+
+# Enviar Certificados por rango de filas
 ![Enviar certificados por rango de filas](assets/certificados_envio_por_rango.png)
 
 
