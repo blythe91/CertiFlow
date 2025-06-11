@@ -117,7 +117,7 @@ Cada opción abre una interfaz gráfica sencilla para que puedas ingresar los da
 ![Enviar certificados por filas](assets/certificados_envio_por_filas.png)
 
 # Enviar Certificados por rango de filas
-![Enviar certificados por rango de filas](assets/certificados_envio_por_rango.png)
+![Enviar certificados por rango de filas](assets/certificados_por_rango.png)
 
 
 ---
