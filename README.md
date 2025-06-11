@@ -111,7 +111,8 @@ Cada opción abre una interfaz gráfica sencilla para que puedas ingresar los da
 
   ```javascript
   const DEFAULT_BATCH_SIZE = 30;
-```
+```javascript
+
 Se permite ingresar URLs completas para hoja de cálculo, plantilla de Slides o carpeta Drive, la librería extraerá automáticamente los IDs usando expresiones regulares.
 
 ## Estructura del proyecto 📂
