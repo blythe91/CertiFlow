@@ -129,17 +129,6 @@ function eliminarTriggerEnvio() {
   }
 }
 
-// Punto de entrada desde el frontend (por ejemplo, Apps Script Web App)
-function procesarYEnviarCertificados(sheet_Id, folder_Id, batchSize) {
-  var props = PropertiesService.getScriptProperties();
-  props.setProperty("sheet_Id_envio", sheet_Id);
-  props.setProperty("folder_Id_envio", folder_Id);
-  props.setProperty("batch_size_envio", batchSize);
-  props.deleteProperty("lastProcessedIndexEnvio");
-
-  enviarCertificadosEmail(sheet_Id, folder_Id, batchSize);
-}
-
 // Progreso para el frontend
 function obtenerProgresoEnvio() {
   var props = PropertiesService.getScriptProperties();
