@@ -13,14 +13,14 @@
 <body>
   <h2>Enviar Certificados por Rango de Filas</h2>
   <form id="sendRangeForm" onsubmit="return false;">
-    <label for="sheetUrl">URL de la Hoja de Cálculo:</label><br>
+    <label for="sheetUrl">URL de la hoja de cálculo:</label><br>
     <input type="text" id="sheetUrl" name="sheetUrl" required><br><br>
 
-    <label for="folderUrl">URL de la Carpeta con los Certificados:</label><br>
+    <label for="folderUrl">URL de la carpeta con los certificados:</label><br>
     <input type="text" id="folderUrl" name="folderUrl" required><br><br>
 
-    <label for="mensajeEmail">Cuerpo del Correo Electrónico:</label><br>
-    <textarea id="mensajeEmail" name="mensajeEmail" placeholder="Ingrese el mensaje que se enviará por correo..."></textarea><br><br>
+    <label for="mensajeEmail">Texto adicional al correo electrónico:</label><br>
+    <textarea id="mensajeEmail" name="mensajeEmail" placeholder="Ingrese la información adicional que debe ser agregada al correo electrónico..."></textarea><br><br>
 
     <label for="startRow">Fila inicial (mínimo 1):</label><br>
     <input type="number" id="startRow" name="startRow" min="1" required><br><br>
