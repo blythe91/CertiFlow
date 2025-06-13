@@ -19,6 +19,13 @@ function procesarYEnviarTotalCertificados(sheetUrl, folderUrl, batchSize, mensaj
   Logger.log("URL de carpeta destino: " + folderUrl);
   Logger.log("ID de carpeta destino: " + folderId);
 
+  var props = PropertiesService.getScriptProperties();
+  props.setProperty("sheet_Id_envio", sheetId);
+  props.setProperty("folder_Id_envio", folderId);
+  props.setProperty("batch_size_envio", batchSize);
+  props.setProperty("mensajeEmail_envio", mensajeEmail);
+
+
   if (!sheetId || !folderId) {
     throw new Error("Alguno de los IDs no pudo extraerse correctamente.");
   }

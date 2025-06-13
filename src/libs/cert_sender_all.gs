@@ -13,6 +13,8 @@ function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize, textEmail) {
   Logger.log("📄 sheet_ID recibido en enviarCertificadosEmail: " + sheet_Id);
   Logger.log("📄 folder_Id recibido en enviarCertificadosEmail: " + folder_Id);
   Logger.log("📄 batchSize recibido en enviarCertificadosEmail: " + batchSize);
+
+  
   
   try {
 
@@ -94,6 +96,7 @@ function enviarCertificadosEmail(sheet_Id, folder_Id, batchSize, textEmail) {
 }
 
 function triggerEnviarCertificados() {
+  
   eliminarTriggerEnvio();
 
   var triggers = ScriptApp.getProjectTriggers();
