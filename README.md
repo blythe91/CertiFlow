@@ -1,5 +1,7 @@
 # CertiFlow 🎓📧
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/blythe91/certiflow)
+
 <img src="assets/certiflow.jpeg" width="200" />
 
 **CertiFlow** es una librería de Google Apps Script para la generación y envío masivo de certificados digitales en formato PDF, a partir de una base de datos en Google Sheets y una plantilla de Google Slides. Facilita automatizar todo el proceso, con opciones flexibles para seleccionar filas específicas o rangos, y envío por correo electrónico de manera eficiente.
