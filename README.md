@@ -20,6 +20,7 @@
 
 ## Requisitos 📝
 
+  ```
 - Tener un Google Spreadsheet con estos encabezados EXACTOS:
     - ID  
     - primer_nombre  
@@ -41,21 +42,22 @@
     - texto-fecha  
     - ubicacion  
     - URL_Certificado
-
+  ```
 - La plantilla de Google Slides debe contener los siguientes marcadores encerrado en llaves {}:
-    - nombre-participante  
-    - di-participante  
-    - tipo-participante  
-    - nombre-evento  
-    - modalidad  
-    - horas  
-    - texto-fecha  
-    - ubicacion  
-    - cod-certificado
-
+  ```
+    {{nombre-participante}}
+    {{di-participante}}
+    {{tipo-participante}}
+    {{nombre-evento}}
+    {{modalidad}}
+    {{horas}}
+    {{texto-fecha}}
+    {{ubicacion}}
+    {{cod-certificado}}
+  ```
 Los formatos están en la carpeta docs.
 
-# plantilla con los campos incorporados
+## plantilla con los campos incorporados
 
 ![plantilla de Google Slides](assets/certificado.jpg)
 
@@ -91,36 +93,36 @@ Certificados
 ├── Por filas
 └── Por rango de filas
 ```
-# Menú principal en la opción "Certificados"
+### Menú principal en la opción "Certificados"
 ![menú](assets/menu.png)
 
-# Submenú de "Generar Certificados"
+### Submenú de "Generar Certificados"
 
 ![Generar Certificados](assets/submenu1.png)
 
-# Submenú de "Enviar Certificados"
+### Submenú de "Enviar Certificados"
 ![Enviar Certificados](assets/submenu2.png)
 
 Cada opción abre una interfaz gráfica sencilla para que puedas ingresar los datos necesarios (URL de spreadsheet, plantilla, carpeta Drive, filas o rangos, mensaje personalizado) y ejecutar la acción deseada.
 
-# Interfaz Gráfica de las opciones de menú
+### Interfaz Gráfica de las opciones de menú
 
-# Generar Certificados
+### Generar Certificados
 ![Generar todos los certificados](assets/todos_los_certificados.png)
 
-# Vista de ejecución
+### Vista de ejecución
 ![Vista de ejecución](assets/ventana_ejecución.png)
 
-# Generar Certificados por filas
+### Generar Certificados por filas
 ![Generar certificados por filas](assets/certificados_por_filas.png)
 
-# Enviar Certificados
+### Enviar Certificados
 ![Enviar todos los certificados](assets/certificados_envio_todos.png)
 
-# Enviar Certificados por filas
+### Enviar Certificados por filas
 ![Enviar certificados por filas](assets/certificados_envio_por_filas.png)
 
-# Enviar Certificados por rango de filas
+### Enviar Certificados por rango de filas
 ![Enviar certificados por rango de filas](assets/certificados_por_rango.png)
 
 
@@ -177,8 +179,13 @@ Puedes elegir bajo cuál de estas dos licencias usar el proyecto:
 
 ---
 
-© 2025 Oscar Giovanni Castro Contreras  
-Ingeniero en Informática  
-📧 oscargiovanni.castro@gmail.com  
-📱 +58 414 703 9597
+## Autor ✍️
+
+**Oscar Giovanni Castro Contreras**\
+Ingeniero en Informática
+
+📧 [oscargiovanni.castro@gmail.com](mailto\:oscargiovanni.castro@gmail.com)\
+📱 +58 414 703 9597\
+🔗 [LinkedIn](https://www.linkedin.com/in/oscargiovannicastrocontreras/)\
+🐙 [GitHub](https://github.com/blythe91)
 
