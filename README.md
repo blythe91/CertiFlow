@@ -74,6 +74,7 @@ Los formatos están en la carpeta docs.
 1. Clona o descarga el repositorio en tu máquina local.  
 2. Instala [clasp](https://github.com/google/clasp) y configura sus pre-requisitos (Node.js, npm).  
 3. Ejecuta `clasp login` para conectar con tu cuenta Google que contiene las hojas de cálculo y Drive a usar.  
+4. Ejecuta `clasp create --title "CertiFlow - Archivo único" --type sheets --rootDir ./` una vez se inicie sesión.
 4. Usa `clasp push` para subir el proyecto a tu entorno de Google Apps Script.  
 5. Desde tu Google Spreadsheet, al abrir el archivo, verás un menú nuevo llamado **Certificados** para ejecutar las funciones.  
 
