@@ -48,7 +48,7 @@ function generarCertificados(sheet_Id, template_Id, folder_Id, batch_size) {
       }
 
       const nombreCompleto = `${row[1]} ${row[2] || ""} ${row[3]} ${row[4] || ""}`.trim();
-      const documentoIdentidad = (row[5] ? row[5] + " " : "") + row[6];
+      const documentoIdentidad = (row[5] ? row[5] + " " : "") + formatearCedulaConPuntos(row[6]);
       const codigoCertificado = row[12];
       const nombreCertificado = `Certificado_${codigoCertificado}_${row[1]}_${row[3]}.pdf`;
 

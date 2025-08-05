@@ -53,3 +53,13 @@ function obtenerIdCarpeta(url) {
 
   return match ? match[1] : null;
 }
+/**
+ * Formatea un número con separador de miles usando punto (.) en lugar de coma (,)
+ * @param {string|number} numero - El número a formatear
+ * @returns {string} Número formateado
+ */
+function formatearCedulaConPuntos(numero) {
+  if (!numero) return "";
+  const limpio = numero.toString().replace(/\D/g, ""); // Elimina cualquier carácter no numérico
+  return limpio.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

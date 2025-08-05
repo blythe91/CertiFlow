@@ -51,7 +51,7 @@ function generarCertificadosPorFilas(filasCSV, sheet_Id, template_Id, folder_Id)
 
       var nombreCompleto = primerNombre + " " + (segundoNombre || "") + " " + primerApellido + " " + (segundoApellido || "");
       nombreCompleto = nombreCompleto.trim();
-      var documentoIdentidad = (prefijoDoc ? prefijoDoc + " " : "") + docIdentidad;
+      var documentoIdentidad = (prefijoDoc ? prefijoDoc + " " : "") + formatearCedulaConPuntos(docIdentidad);
       var nombreCertificado = "Certificado_" + codigoCertificado + "_" + primerNombre + "_" + primerApellido + ".pdf";
 
       var archivos = folder.getFilesByName(nombreCertificado);
