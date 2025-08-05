@@ -78,7 +78,7 @@ Los formatos están en la carpeta docs.
 4. Usa `clasp push` para subir el proyecto a tu entorno de Google Apps Script.  
 5. Desde tu Google Spreadsheet, al abrir el archivo, verás un menú nuevo llamado **Certificados** para ejecutar las funciones.  
 
-*Nota:* Pronto se publicará como librería oficial para importarla directamente sin necesidad de descargar, pero aún está en desarrollo.
+*Nota:* Pronto se publicará como librería oficial para importarla directamente sin necesidad de descargar.
 
 ---
 
